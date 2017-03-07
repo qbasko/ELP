@@ -1,4 +1,5 @@
 ﻿using ELP.Model.Common;
+using ELP.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading;
 
 namespace ELP.Model
 {
-    public class ELPContext : DbContext
+    public class ELPContext : DbContext, IContext
     {
         public ELPContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
@@ -14,6 +15,9 @@ namespace ELP.Model
         }
 
         public DbSet<Event> Events { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
