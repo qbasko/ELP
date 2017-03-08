@@ -11,7 +11,7 @@ namespace ELP.Service.Common
     {
         void Create(T entity);
         void Delete(T entity);
-        Task<IEnumerable<T>> GetAll();
+        IEnumerable<T> GetAll();
         void Update(T entity);
     }
 }
