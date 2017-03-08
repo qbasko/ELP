@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace ELP.Service.Common
 {
@@ -44,9 +45,9 @@ namespace ELP.Service.Common
             _context.SaveChanges();
         }
 
-        public async virtual Task<IEnumerable<T>> GetAll()
+        public virtual IEnumerable<T> GetAll()
         {
-            return await _dbset.ToListAsync<T>();
+            return _dbset.AsEnumerable<T>();
         }
     }
 }
