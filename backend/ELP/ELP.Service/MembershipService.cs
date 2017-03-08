@@ -8,16 +8,43 @@ namespace ELP.Service
 {
     public class MembershipService : IMembershipService
     {
-        private IContext _context;
+        private readonly IContext _context;
+        private readonly IUserService _userService;
+        private readonly IEncryptionService _encryptionService;
 
-        public MembershipService(IContext context)
+        public MembershipService(IUserService userService, IEncryptionService encryptionService)
         {
-            _context = context;
+            _userService = userService;
+            _encryptionService = encryptionService;
         }
 
         public User CreateUser(string username, string email, string password, ICollection<int> roles)
         {
-           User existingUser = 
+            
+            User existingUser = _userService.GetUserByUsername(username);
+            if(existingUser!=null)
+            {
+                throw new Exception("Username is already registered");
+            }
+
+            string passwordSalt = _encryptionService.CreateSalt();
+
+            User user = new User()
+            {
+                Username = username,
+                Salt = passwordSalt,
+                Email = email,
+                IsLocked = false,
+                HashedPassword = _encryptionService.EncryptPassword(password, passwordSalt),
+                CreatedDate = DateTime.Now
+            };
+
+            _userService.Create(user);
+            
+            //TODO Add roles
+            
+            return null;
+            
         }
 
         public User GetUser(int userId)

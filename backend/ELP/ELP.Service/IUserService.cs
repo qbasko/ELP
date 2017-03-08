@@ -8,5 +8,6 @@ namespace ELP.Service
 {
     public interface IUserService: IEntityService<User>
     {
+        User GetUserByUsername(string username);
     }
 }
