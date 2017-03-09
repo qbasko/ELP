@@ -22,8 +22,6 @@ namespace ELP.Model
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-
-
         }
 
         public override int SaveChanges()

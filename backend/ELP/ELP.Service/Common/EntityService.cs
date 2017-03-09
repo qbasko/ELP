@@ -26,7 +26,7 @@ namespace ELP.Service.Common
             {
                 throw new ArgumentNullException("entity");
             }
-
+            
             _dbset.Add(entity);
             _context.SaveChanges();
         }
