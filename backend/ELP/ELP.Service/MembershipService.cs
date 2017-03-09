@@ -4,6 +4,8 @@ using System.Text;
 using ELP.Model.Entities;
 using ELP.Model;
 using ELP.Service.Exceptions;
+using System.Linq;
+using System.Security.Principal;
 
 namespace ELP.Service
 {
@@ -24,7 +26,6 @@ namespace ELP.Service
 
         public User CreateUser(string username, string email, string password, ICollection<int> roles)
         {
-
             User existingUser = _userService.GetUserByUsername(username);
             if (existingUser != null)
             {
@@ -62,12 +63,32 @@ namespace ELP.Service
 
         public List<Role> GetUserRoles(string username)
         {
-            throw new NotImplementedException();
+            List<Role> roles = new List<Role>();
+            User user = _userService.GetUserByUsername(username);
+            if (user != null)
+            {
+                foreach (var userRole in user.UserRoles)
+                {
+                    roles.Add(userRole.Role);
+                }
+            }
+            return roles.Distinct().ToList();
         }
 
-        public MembershipService ValidateUser(string username, string password)
+        public MembershipContext ValidateUser(string username, string password)
         {
-            throw new NotImplementedException();
+            MembershipContext membershipCtx = new MembershipContext();
+            User user = _userService.GetUserByUsername(username);
+            if (user != null && IsUserValid(user, password))
+            {
+                membershipCtx.User = user;
+                List<Role> userRoles = GetUserRoles(username);
+                GenericIdentity identity = new GenericIdentity(user.Username);
+                membershipCtx.Principal = new GenericPrincipal(
+                    identity,
+                    userRoles.Select(x => x.Name).ToArray());
+            }
+            return membershipCtx;
         }
 
 
@@ -90,5 +111,18 @@ namespace ELP.Service
             _userRoleService.Create(userRole);
         }
 
+        private bool IsPasswordValid(User user, string password)
+        {
+            return String.Equals(_encryptionService.EncryptPassword(password, user.Salt), user.HashedPassword);
+        }
+
+        private bool IsUserValid(User user, string password)
+        {
+            if (IsPasswordValid(user, password))
+            {
+                return !user.IsLocked;
+            }
+            return false;
+        }
     }
 }
