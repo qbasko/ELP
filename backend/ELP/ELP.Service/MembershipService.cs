@@ -91,7 +91,6 @@ namespace ELP.Service
             return membershipCtx;
         }
 
-
         private void AddUserToRole(User user, int roleId)
         {
             Role role = _roleService.GetRoleById(roleId);
