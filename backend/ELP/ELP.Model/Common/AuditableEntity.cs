@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ELP.Model.Common
 {
-    public class AuditableEntity : IAuditableEntity
+    public class AuditableEntity<T> : Entity<T>, IAuditableEntity
     {
         [ScaffoldColumn(false)]
         public DateTime CreatedDate { get; set; }
