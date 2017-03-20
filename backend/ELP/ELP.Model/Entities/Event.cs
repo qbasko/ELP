@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace ELP.Model
+namespace ELP.Model.Entities
 {
-    public class Event : Entity<long>
+    public class Event : AuditableEntity<long>
     {
         [Required]
         [MaxLength(100)]
