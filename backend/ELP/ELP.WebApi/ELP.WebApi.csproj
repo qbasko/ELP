@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ELP.Model\ELP.Model.csproj" />
+    <ProjectReference Include="..\ELP.Service\ELP.Service.csproj" />
   </ItemGroup>
 
 </Project>
