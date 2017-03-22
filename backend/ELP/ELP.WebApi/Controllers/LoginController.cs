@@ -34,6 +34,13 @@ namespace ELP.WebApi.Controllers
             return "value";
         }
 
+        // GET api/ping
+        [HttpGet("ping")]
+        public string Ping()
+        {
+            return DateTime.UtcNow.ToString();
+        }
+
         // POST api/values
         [HttpPost]
         public void Post([FromBody]string value)

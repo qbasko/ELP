@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ELP.Model;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using ELP.Service;
 
 namespace ELP.WebApi
 {
@@ -23,16 +26,28 @@ namespace ELP.WebApi
             Configuration = builder.Build();
         }
 
+        public IContainer ApplicationContainer { get; private set; }
+
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-
+            services.AddMvc();
             services.AddDbContext<ELPContext>();
 
-            // Add framework services.
-            services.AddMvc();
+            var builder = new ContainerBuilder();
+
+            builder.RegisterModule<ModelModule>();
+            builder.RegisterModule<ServiceModule>();
+            builder.RegisterModule<WebApiModule>();
+
+            builder.Populate(services);
+
+            ApplicationContainer = builder.Build();
+
+            return new AutofacServiceProvider(ApplicationContainer);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +57,8 @@ namespace ELP.WebApi
             loggerFactory.AddDebug();
 
             app.UseMvc();
+                        
         }
+
     }
 }
