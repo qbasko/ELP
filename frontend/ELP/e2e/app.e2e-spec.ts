@@ -1,6 +1,6 @@
 import { ELPPage } from './app.po';
 
-describe('elp App', () => {
+describe('elp App', function() {
   let page: ELPPage;
 
   beforeEach(() => {
