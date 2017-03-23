@@ -13,6 +13,8 @@ using Autofac.Extensions.DependencyInjection;
 using ELP.Service;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using ELP.Model.Entities;
+using ELP.WebApi.Models;
 
 namespace ELP.WebApi
 {
@@ -38,7 +40,7 @@ namespace ELP.WebApi
             services.AddMvc();
 
             var connectionString = Configuration["connectionStrings:ELPdb"];
-            services.AddDbContext<ELPContext>(o => o.UseSqlServer(connectionString));         
+            services.AddDbContext<ELPContext>(o => o.UseSqlServer(connectionString));
 
             var builder = new ContainerBuilder();
             builder.RegisterModule<ModelModule>();
@@ -58,8 +60,15 @@ namespace ELP.WebApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            AutoMapper.Mapper.Initialize(cfg =>
+            {                                    //for custom mapping
+                cfg.CreateMap<User, UserDto>(); //.ForMember(dest => dest.Username, opt => opt.MapFrom(src => "UserName: " + src.Username));
+
+                cfg.CreateMap<Event, EventDto>();
+            });
+
             app.UseMvc();
-                        
+
         }
 
     }

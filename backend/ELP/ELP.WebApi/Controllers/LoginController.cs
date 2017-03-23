@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ELP.Model.Entities;
 using ELP.Service;
+using ELP.WebApi.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -60,7 +61,7 @@ namespace ELP.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register([FromBody] User user)
+        public IActionResult Register([FromBody] UserDto user)
         {
 
             GenericResult result = null;
