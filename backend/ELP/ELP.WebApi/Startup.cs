@@ -11,6 +11,8 @@ using ELP.Model;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using ELP.Service;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace ELP.WebApi
 {
@@ -34,14 +36,14 @@ namespace ELP.WebApi
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddDbContext<ELPContext>();
+
+            var connectionString = Configuration["connectionStrings:ELPdb"];
+            services.AddDbContext<ELPContext>(o => o.UseSqlServer(connectionString));         
 
             var builder = new ContainerBuilder();
-
             builder.RegisterModule<ModelModule>();
             builder.RegisterModule<ServiceModule>();
             builder.RegisterModule<WebApiModule>();
-
             builder.Populate(services);
 
             ApplicationContainer = builder.Build();

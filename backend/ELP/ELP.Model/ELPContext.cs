@@ -9,7 +9,7 @@ namespace ELP.Model
 {
     public class ELPContext : DbContext, IContext
     {
-        public ELPContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+        public ELPContext(DbContextOptions<ELPContext> dbContextOptions) : base(dbContextOptions)
         {
 
         }
