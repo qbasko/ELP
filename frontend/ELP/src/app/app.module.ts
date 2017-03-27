@@ -8,12 +8,14 @@ import {RouterModule} from '@angular/router';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import {WelcomeComponent} from './welcome/welcome.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -22,6 +24,7 @@ import {WelcomeComponent} from './welcome/welcome.component';
     AlertModule.forRoot(),
     RouterModule.forRoot([    
     {path: 'login', component: LoginComponent},
+    {path: 'register', component: RegisterComponent},
     {path: '', redirectTo: 'welcome', pathMatch: 'full'},
     {path: '**', redirectTo: 'welcome', pathMatch: 'full'}
   ]),
