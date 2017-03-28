@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit {
                     if (result === true) {
                         localStorage.setItem(Constants.Username, this._username);
                         this.loggedUsername = this._username;
-                        this.router.navigate(['/loginSuccess']);
+                        this.router.navigate(['/welcome']);
                     }
                     else {
                         this._hideSummaryError = false;

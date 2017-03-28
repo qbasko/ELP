@@ -23,26 +23,26 @@ export class LoginService {
       'Password': password
     };
 
-    let headers = new Headers();
-    headers.append('Content-Type', 'application/json; charset=utf-8');
-    headers.append('Accept', 'application/json; charset=utf-8');
     let body = JSON.stringify(userCredentials);
+    let headers = new Headers({ 'Content-Type': 'application/json','Accept': 'application/json' });
+    let options = new RequestOptions({ headers: headers });
 
     console.log(Constants._apiUrl.concat(this._signInAction));
 
-    return this.http.post(Constants._apiUrl.concat(this._signInAction), body, { headers: headers })
+    return this.http.post(Constants._apiUrl.concat(this._signInAction), body, options)
       .map((response: Response) => {
         console.log(response.json());
-        let token = response.json() && response.json().Token;
-        if (token) {
-          console.log("token set");
-          this.token = token;
-          localStorage.setItem(Constants.CurrentUser, JSON.stringify({ Username: username, Token: token }));
-          return true;
+        return true;
+        // let token = response.json() && response.json().Token;
+        // if (token) {
+        //   console.log("token set");
+        //   this.token = token;
+        //   localStorage.setItem(Constants.CurrentUser, JSON.stringify({ Username: username, Token: token }));
+        //   return true;
 
-        } else {
-          return false;
-        }
+        // } else {
+        //   return false;
+        // }
       });
   }
 

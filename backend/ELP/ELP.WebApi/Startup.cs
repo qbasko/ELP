@@ -15,6 +15,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using ELP.Model.Entities;
 using ELP.WebApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace ELP.WebApi
 {
@@ -37,7 +39,19 @@ namespace ELP.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(opt =>
+            {
+                var resolver = opt.SerializerSettings.ContractResolver;
+                if (resolver != null)
+                {
+                    var res = resolver as DefaultContractResolver;
+                    res.NamingStrategy = null;
+                }
+            }); 
+
+            //services.AddMvcCore().AddJsonFormatters(j => j.Formatting = Formatting.Indented);
+
+
 
             var connectionString = Configuration["connectionStrings:ELPdb"];
             services.AddDbContext<ELPContext>(o => o.UseSqlServer(connectionString));
@@ -67,7 +81,8 @@ namespace ELP.WebApi
                 cfg.CreateMap<Event, EventDto>();
             });
 
-            app.UseCors(config => config.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            app.UseCors(config => config.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+            
 
             app.UseMvc();
 

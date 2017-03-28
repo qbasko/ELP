@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Constants } from 'app/constants';
 
 @Component({
   selector: 'app-welcome',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WelcomeComponent implements OnInit {
 
-  constructor() { }
+  public username: string;
+  
+  constructor() { 
+    
+  }
 
   ngOnInit() {
+    this.username = localStorage.getItem(Constants.Username);
   }
 
 }

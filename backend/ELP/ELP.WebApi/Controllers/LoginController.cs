@@ -101,7 +101,6 @@ namespace ELP.WebApi.Controllers
         [HttpPost("signin")]
         public IActionResult SignIn([FromBody] UserDto user)
         {
-
             return new ObjectResult(new GenericResult()
             {
                 Success = true,

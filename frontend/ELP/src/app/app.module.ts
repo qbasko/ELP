@@ -25,6 +25,7 @@ import { RegisterComponent } from './register/register.component';
     RouterModule.forRoot([    
     {path: 'login', component: LoginComponent},
     {path: 'register', component: RegisterComponent},
+    {path: 'welcome', component: WelcomeComponent},    
     {path: '', redirectTo: 'welcome', pathMatch: 'full'},
     {path: '**', redirectTo: 'welcome', pathMatch: 'full'}
   ]),
