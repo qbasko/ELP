@@ -67,6 +67,8 @@ namespace ELP.WebApi
                 cfg.CreateMap<Event, EventDto>();
             });
 
+            app.UseCors(config => config.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
             app.UseMvc();
 
         }

@@ -86,7 +86,7 @@ namespace ELP.WebApi.Controllers
                     };
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result = new GenericResult()
                 {
@@ -96,6 +96,17 @@ namespace ELP.WebApi.Controllers
             }
 
             return new ObjectResult(result);
+        }
+
+        [HttpPost("signin")]
+        public IActionResult SignIn([FromBody] UserDto user)
+        {
+
+            return new ObjectResult(new GenericResult()
+            {
+                Success = true,
+                Message = DateTime.UtcNow.ToString()
+            });
         }
     }
 }
