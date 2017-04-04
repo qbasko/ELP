@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using ELP.Model.Entities;
 using ELP.Service;
 using ELP.WebApi.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,9 +16,9 @@ namespace ELP.WebApi.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        private readonly IMembershipService _membershipService;
+        private readonly IUserService _membershipService;
 
-        public LoginController(IMembershipService membershipService)
+        public LoginController(IUserService membershipService)
         {
             _membershipService = membershipService;
         }
@@ -60,14 +62,14 @@ namespace ELP.WebApi.Controllers
         {
         }
 
-        [HttpPost]
-        public IActionResult Register([FromBody] UserDto user)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserDto user)
         {
 
             GenericResult result = null;
             try
             {
-                User createdUser = _membershipService.CreateUser(user.Username, user.Email, user.Password, new List<int>() { 1 });
+                IdentityResult createdUser = await _membershipService.CreateUser(new IdentityUser(user.Username), user.Password);
 
                 if (user != null)
                 {

@@ -76,7 +76,7 @@ namespace ELP.WebApi
 
             AutoMapper.Mapper.Initialize(cfg =>
             {                                    //for custom mapping
-                cfg.CreateMap<User, UserDto>(); //.ForMember(dest => dest.Username, opt => opt.MapFrom(src => "UserName: " + src.Username));
+                 //.ForMember(dest => dest.Username, opt => opt.MapFrom(src => "UserName: " + src.Username));
 
                 cfg.CreateMap<Event, EventDto>();
             });

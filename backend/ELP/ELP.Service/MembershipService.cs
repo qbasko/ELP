@@ -6,6 +6,7 @@ using ELP.Model;
 using ELP.Service.Exceptions;
 using System.Linq;
 using System.Security.Principal;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace ELP.Service
 {
@@ -26,7 +27,7 @@ namespace ELP.Service
 
         public User CreateUser(string username, string email, string password, ICollection<int> roles)
         {
-            User existingUser = _userService.GetUserByUsername(username);
+            IdentityUser existingUser = _userService.GetUserByUsername(username);
             if (existingUser != null)
             {
                 throw new UserAlreadyRegisteredException();
@@ -34,14 +35,14 @@ namespace ELP.Service
 
             string passwordSalt = _encryptionService.CreateSalt();
 
-            User user = new User()
-            {
-                Id = 1,
-                Username = username,
-                Salt = passwordSalt,
+
+
+            IdentityUser user = new IdentityUser()
+            {                
+                UserName = username,             
                 Email = email,
-                IsLocked = false,
-                HashedPassword = _encryptionService.EncryptPassword(password, passwordSalt),
+                LockoutEnabled = false,
+                PasswordHash = _encryptionService.EncryptPassword(password, passwordSalt),
                 CreatedDate = DateTime.Now,
                 UpdatedDate = DateTime.Now
             };
@@ -61,15 +62,15 @@ namespace ELP.Service
             throw new NotImplementedException();
         }
 
-        public List<Role> GetUserRoles(string username)
+        public List<string> GetUserRoles(string username)
         {
-            List<Role> roles = new List<Role>();
-            User user = _userService.GetUserByUsername(username);
+            List<string> roles = new List<string>();
+            IdentityUser user = _userService.GetUserByUsername(username);
             if (user != null)
             {
-                foreach (var userRole in user.UserRoles)
+                foreach (var userRole in user.Roles)
                 {
-                    roles.Add(userRole.Role);
+                    roles.Add(userRole.RoleId);
                 }
             }
             return roles.Distinct().ToList();
@@ -78,15 +79,15 @@ namespace ELP.Service
         public MembershipContext ValidateUser(string username, string password)
         {
             MembershipContext membershipCtx = new MembershipContext();
-            User user = _userService.GetUserByUsername(username);
+            IdentityUser user = _userService.GetUserByUsername(username);
             if (user != null && IsUserValid(user, password))
             {
                 membershipCtx.User = user;
-                List<Role> userRoles = GetUserRoles(username);
-                GenericIdentity identity = new GenericIdentity(user.Username);
+                List<string> userRoles = GetUserRoles(username);
+                GenericIdentity identity = new GenericIdentity(user.UserName);
                 membershipCtx.Principal = new GenericPrincipal(
                     identity,
-                    userRoles.Select(x => x.Name).ToArray());
+                    userRoles.ToArray());
             }
             return membershipCtx;
         }
@@ -110,16 +111,16 @@ namespace ELP.Service
             _userRoleService.Create(userRole);
         }
 
-        private bool IsPasswordValid(User user, string password)
+        private bool IsPasswordValid(IdentityUser user, string password)
         {
-            return String.Equals(_encryptionService.EncryptPassword(password, user.Salt), user.HashedPassword);
+            return true;
         }
 
-        private bool IsUserValid(User user, string password)
+        private bool IsUserValid(IdentityUser user, string password)
         {
             if (IsPasswordValid(user, password))
             {
-                return !user.IsLocked;
+                return !user.LockoutEnabled;
             }
             return false;
         }
