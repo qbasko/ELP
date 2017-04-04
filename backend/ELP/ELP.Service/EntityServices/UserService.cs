@@ -8,6 +8,7 @@ using ELP.Model;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ELP.Service
 {
@@ -15,10 +16,9 @@ namespace ELP.Service
     {
         private UserManager<IdentityUser> _userManager;
 
-        public UserService(IContext context, UserManager<IdentityUser> userManager) : base(context)
-        {            
+        public UserService(ELPContext context, UserManager<IdentityUser> userManager) : base(context)
+        {
             _userManager = userManager;
-            //var userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(context));
         }
 
         public IdentityUser GetUserByUsername(string username)

@@ -16,11 +16,11 @@ namespace ELP.WebApi.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        private readonly IUserService _membershipService;
+        private readonly IUserService _userService;
 
-        public LoginController(IUserService membershipService)
+        public LoginController(IUserService userService)
         {
-            _membershipService = membershipService;
+            _userService = userService;
         }
 
         // GET: api/values
@@ -69,7 +69,7 @@ namespace ELP.WebApi.Controllers
             GenericResult result = null;
             try
             {
-                IdentityResult createdUser = await _membershipService.CreateUser(new IdentityUser(user.Username), user.Password);
+                IdentityResult createdUser = await _userService.CreateUser(new IdentityUser(user.Username), user.Password);
 
                 if (user != null)
                 {

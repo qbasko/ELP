@@ -17,6 +17,13 @@ using ELP.Model.Entities;
 using ELP.WebApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ELP.WebApi
 {
@@ -47,7 +54,7 @@ namespace ELP.WebApi
                     var res = resolver as DefaultContractResolver;
                     res.NamingStrategy = null;
                 }
-            }); 
+            });
 
             //services.AddMvcCore().AddJsonFormatters(j => j.Formatting = Formatting.Indented);
 
@@ -55,6 +62,53 @@ namespace ELP.WebApi
 
             var connectionString = Configuration["connectionStrings:ELPdb"];
             services.AddDbContext<ELPContext>(o => o.UseSqlServer(connectionString));
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddMemoryCache();
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ELPContext>();
+
+            services.Configure<IdentityOptions>(cfg =>
+            {
+                cfg.Cookies.ApplicationCookie.Events =
+              new CookieAuthenticationEvents()
+              {
+                  OnRedirectToLogin = (ctx) =>
+                  {
+                      if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                      {
+                          ctx.Response.StatusCode = 401;
+                      }
+
+                      return Task.CompletedTask;
+                  },
+                  OnRedirectToAccessDenied = (ctx) =>
+                  {
+                      if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                      {
+                          ctx.Response.StatusCode = 403;
+                      }
+
+                      return Task.CompletedTask;
+                  }
+              };
+            });
+
+            services.AddApiVersioning(cfg =>
+            {
+                cfg.DefaultApiVersion = new ApiVersion(1, 1);
+                cfg.AssumeDefaultVersionWhenUnspecified = true;
+                cfg.ReportApiVersions = true;
+                var rdr = new QueryStringOrHeaderApiVersionReader("ver");
+                rdr.HeaderNames.Add("X-MyCodeCamp-Version");
+                cfg.ApiVersionReader = rdr;
+
+            });
+
+            services.AddAuthorization(cfg =>
+            {
+                cfg.AddPolicy("SuperUsers", p => p.RequireClaim("SuperUser", "True"));
+            });
 
             var builder = new ContainerBuilder();
             builder.RegisterModule<ModelModule>();
@@ -76,13 +130,28 @@ namespace ELP.WebApi
 
             AutoMapper.Mapper.Initialize(cfg =>
             {                                    //for custom mapping
-                 //.ForMember(dest => dest.Username, opt => opt.MapFrom(src => "UserName: " + src.Username));
+                                                 //.ForMember(dest => dest.Username, opt => opt.MapFrom(src => "UserName: " + src.Username));
 
                 cfg.CreateMap<Event, EventDto>();
             });
 
             app.UseCors(config => config.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
-            
+
+            app.UseIdentity();
+
+            app.UseJwtBearerAuthentication(new JwtBearerOptions()
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidIssuer = Configuration["Tokens:Issuer"],
+                    ValidAudience = Configuration["Tokens:Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"])),
+                    ValidateLifetime = true
+                }
+            });
 
             app.UseMvc();
 
