@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <Compile Remove="Entities\Role.cs" />
-    <Compile Remove="Entities\User.cs" />
     <Compile Remove="Entities\UserRole.cs" />
   </ItemGroup>
 

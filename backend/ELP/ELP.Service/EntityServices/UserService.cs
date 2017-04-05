@@ -12,23 +12,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ELP.Service
 {
-    public class UserService : EntityService<IdentityUser>, IUserService
+    public class UserService : IUserService
     {
-        private UserManager<IdentityUser> _userManager;
+        private UserManager<User> _userManager;
+        private SignInManager<User> _signInManager;
 
-        public UserService(ELPContext context, UserManager<IdentityUser> userManager) : base(context)
+        public UserService(ELPContext context, UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
-        public IdentityUser GetUserByUsername(string username)
+        public async Task<User> GetUserByUsername(string username)
         {
-            return _dbset.FirstOrDefault(u => u.UserName == username);
+            return await _userManager.FindByNameAsync(username);
         }
 
-        public async Task<IdentityResult> CreateUser(IdentityUser user, string password)
+        public async Task<IdentityResult> CreateUser(User user, string password)
         {
             return await _userManager.CreateAsync(user, password);
+        }
+
+        public async Task<SignInResult> SignIn(string username, string password)
+        {
+            return await _signInManager.PasswordSignInAsync(username, password, false, false);
+        }
+
+        public async Task SignOut()
+        {
+            await _signInManager.SignOutAsync();
         }
 
 

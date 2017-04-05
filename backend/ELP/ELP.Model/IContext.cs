@@ -11,8 +11,8 @@ namespace ELP.Model
     public interface IContext
     {
         DbSet<Event> Events { get; set; }
-        DbSet<IdentityUser> Users { get; set; }
-        DbSet<IdentityRole> Roles { get; set; }
+        //DbSet<IdentityUser> Users { get; set; }
+        //DbSet<IdentityRole> Roles { get; set; }
         //DbSet<IdentityUserRole> UserRoles { get; set; }
 
         DbSet<TEntity> Set<TEntity>() where TEntity : class;

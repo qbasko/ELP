@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace ELP.Model
 {
-    public class ELPContext : IdentityDbContext<IdentityUser>, IContext
+    public class ELPContext : IdentityDbContext<User>, IContext
     {
         public ELPContext(DbContextOptions<ELPContext> dbContextOptions) : base(dbContextOptions)
         {

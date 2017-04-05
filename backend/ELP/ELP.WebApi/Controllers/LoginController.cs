@@ -65,17 +65,19 @@ namespace ELP.WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserDto user)
         {
-
             GenericResult result = null;
             try
             {
-                IdentityResult createdUser = await _userService.CreateUser(new IdentityUser(user.Username), user.Password);
+                User newUser = new User(user.Username);
+                newUser.Email = user.Email;
+                newUser.FirstName = user.FirstName;
+                IdentityResult createdUser = await _userService.CreateUser(newUser, user.Password);
 
-                if (user != null)
+                if (createdUser!=null && createdUser.Succeeded)
                 {
                     result = new GenericResult()
                     {
-                        Success = true,
+                        Success = createdUser.Succeeded,
                         Message = "Registration succeeded"
                     };
                 }
@@ -90,10 +92,11 @@ namespace ELP.WebApi.Controllers
             }
             catch (Exception ex)
             {
+                //TODO log message
                 result = new GenericResult()
                 {
                     Success = false,
-                    Message = ex.Message
+                    Message = "Registration failed"
                 };
             }
 
@@ -101,11 +104,13 @@ namespace ELP.WebApi.Controllers
         }
 
         [HttpPost("signin")]
-        public IActionResult SignIn([FromBody] UserDto user)
+        public async Task<IActionResult> SignIn([FromBody] UserDto user)
         {
+            var result = await _userService.SignIn(user.Username, user.Password);
+            
             return new ObjectResult(new GenericResult()
             {
-                Success = true,
+                Success = result.Succeeded,
                 Message = DateTime.UtcNow.ToString()
             });
         }

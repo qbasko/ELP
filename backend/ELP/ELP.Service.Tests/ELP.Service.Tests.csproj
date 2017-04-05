@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EncryptionServiceTests.cs" />
     <Compile Remove="MembershipServiceTests.cs" />
     <Compile Remove="RoleServiceTests.cs" />
     <Compile Remove="UserServiceTests.cs" />

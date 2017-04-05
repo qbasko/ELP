@@ -65,7 +65,7 @@ namespace ELP.WebApi
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ELPContext>();
 
             services.Configure<IdentityOptions>(cfg =>

@@ -5,10 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EncryptionService.cs" />
     <Compile Remove="EntityServices\IRoleService.cs" />
     <Compile Remove="EntityServices\IUserRoleService.cs" />
     <Compile Remove="EntityServices\RoleService.cs" />
     <Compile Remove="EntityServices\UserRoleService.cs" />
+    <Compile Remove="IEncryptionService.cs" />
+    <Compile Remove="IMembershipService.cs" />
+    <Compile Remove="MembershipContext.cs" />
     <Compile Remove="MembershipService.cs" />
   </ItemGroup>
 

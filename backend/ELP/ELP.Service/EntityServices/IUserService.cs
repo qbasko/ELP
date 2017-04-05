@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 
 namespace ELP.Service
 {
-    public interface IUserService: IEntityService<IdentityUser>
+    public interface IUserService
     {
-        IdentityUser GetUserByUsername(string username);
-        Task<IdentityResult> CreateUser(IdentityUser user, string password);
+        Task<User> GetUserByUsername(string username);
+        Task<IdentityResult> CreateUser(User user, string password);
+        Task<SignInResult> SignIn(string username, string password);
+        Task SignOut();
     }
 }
