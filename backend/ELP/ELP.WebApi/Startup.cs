@@ -37,28 +37,34 @@ namespace ELP.WebApi
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            _env = env;
         }
 
         public IContainer ApplicationContainer { get; private set; }
 
         public IConfigurationRoot Configuration { get; }
+        private IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().AddJsonOptions(opt =>
+            services.AddMvc(opt =>
             {
-                var resolver = opt.SerializerSettings.ContractResolver;
-                if (resolver != null)
-                {
-                    var res = resolver as DefaultContractResolver;
-                    res.NamingStrategy = null;
-                }
-            });
+                //if (!_env.IsProduction())
+                //{
+                //    opt.SslPort = 44388;
+                //}
+                //opt.Filters.Add(new RequireHttpsAttribute());
+
+            }).AddJsonOptions(opt =>
+            {
+                opt.SerializerSettings.ReferenceLoopHandling =
+                    ReferenceLoopHandling.Ignore;
+            }); ;
 
             //services.AddMvcCore().AddJsonFormatters(j => j.Formatting = Formatting.Indented);
-
-
+     
 
             var connectionString = Configuration["connectionStrings:ELPdb"];
             services.AddDbContext<ELPContext>(o => o.UseSqlServer(connectionString));

@@ -86,7 +86,7 @@ namespace ELP.WebApi.Controllers
                     result = new GenericResult()
                     {
                         Success = false,
-                        Message = "Registration failed"
+                        Message = createdUser.Errors.First().Description
                     };
                 }
             }
