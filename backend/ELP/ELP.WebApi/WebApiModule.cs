@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.DotNet.InternalAbstractions;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
 
 namespace ELP.WebApi
 {

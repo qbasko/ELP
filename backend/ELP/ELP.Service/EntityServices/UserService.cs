@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ELP.Service
 {
@@ -16,11 +17,13 @@ namespace ELP.Service
     {
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
+        private IPasswordHasher<User> _passwordHasher;
 
-        public UserService(ELPContext context, UserManager<User> userManager, SignInManager<User> signInManager)
+        public UserService(ELPContext context, UserManager<User> userManager, SignInManager<User> signInManager, IPasswordHasher<User> hasher)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _passwordHasher = hasher;
         }
 
         public async Task<User> GetUserByUsername(string username)
@@ -43,6 +46,14 @@ namespace ELP.Service
             await _signInManager.SignOutAsync();
         }
 
+        public PasswordVerificationResult VerifyHashedPassword(User user, string password)
+        {
+            return _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+        }
 
+        public async Task<IList<Claim>> GetClaims(User user)
+        {
+            return await _userManager.GetClaimsAsync(user);
+        }
     }
 }

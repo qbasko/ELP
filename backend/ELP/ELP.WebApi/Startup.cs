@@ -36,43 +36,32 @@ namespace ELP.WebApi
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            _configuration = builder.Build();
 
             _env = env;
         }
 
         public IContainer ApplicationContainer { get; private set; }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfigurationRoot _configuration;
         private IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(opt =>
-            {
-                //if (!_env.IsProduction())
-                //{
-                //    opt.SslPort = 44388;
-                //}
-                //opt.Filters.Add(new RequireHttpsAttribute());
-
-            }).AddJsonOptions(opt =>
-            {
-                opt.SerializerSettings.ReferenceLoopHandling =
-                    ReferenceLoopHandling.Ignore;
-            }); ;
-
+          
             //services.AddMvcCore().AddJsonFormatters(j => j.Formatting = Formatting.Indented);
      
 
-            var connectionString = Configuration["connectionStrings:ELPdb"];
+            var connectionString = _configuration["connectionStrings:ELPdb"];
             services.AddDbContext<ELPContext>(o => o.UseSqlServer(connectionString));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ELPContext>();
+
+            services.AddTransient<ELPIdentityInitializer>();
 
             services.Configure<IdentityOptions>(cfg =>
             {
@@ -111,10 +100,31 @@ namespace ELP.WebApi
 
             });
 
+            services.AddCors(cfg =>
+            {
+                cfg.AddPolicy("ELP", bldr =>
+                {
+                    bldr.AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .WithOrigins("http://localhost:4200");
+                });           
+            });
+
             services.AddAuthorization(cfg =>
             {
-                cfg.AddPolicy("SuperUsers", p => p.RequireClaim("SuperUser", "True"));
+                cfg.AddPolicy("SuperUser", p => p.RequireClaim("SuperUser", "True"));
             });
+
+            services.AddMvc(opt =>
+            {
+
+            }).AddJsonOptions(opt =>
+            {
+                opt.SerializerSettings.ReferenceLoopHandling =
+                    ReferenceLoopHandling.Ignore;
+            });
+
+            services.AddSingleton(_configuration);
 
             var builder = new ContainerBuilder();
             builder.RegisterModule<ModelModule>();
@@ -125,13 +135,13 @@ namespace ELP.WebApi
             ApplicationContainer = builder.Build();
 
             return new AutofacServiceProvider(ApplicationContainer);
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            ELPIdentityInitializer identityInitializer)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddConsole(_configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             AutoMapper.Mapper.Initialize(cfg =>
@@ -151,15 +161,17 @@ namespace ELP.WebApi
                 AutomaticChallenge = true,
                 TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidIssuer = Configuration["Tokens:Issuer"],
-                    ValidAudience = Configuration["Tokens:Audience"],
+                    ValidIssuer = _configuration["Tokens:Issuer"],
+                    ValidAudience = _configuration["Tokens:Audience"],
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"])),
                     ValidateLifetime = true
                 }
             });
 
             app.UseMvc();
+
+            identityInitializer.Seed().Wait();
 
         }
 

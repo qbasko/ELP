@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,5 +16,7 @@ namespace ELP.Service
         Task<IdentityResult> CreateUser(User user, string password);
         Task<SignInResult> SignIn(string username, string password);
         Task SignOut();
+        PasswordVerificationResult VerifyHashedPassword(User user, string password);
+        Task<IList<Claim>> GetClaims(User user);
     }
 }

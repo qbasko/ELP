@@ -8,6 +8,15 @@ using ELP.Service;
 using ELP.WebApi.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using ELP.WebApi.Filters;
+using Microsoft.Extensions.Logging;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,10 +26,14 @@ namespace ELP.WebApi.Controllers
     public class LoginController : Controller
     {
         private readonly IUserService _userService;
+        private readonly ILogger<LoginController> _logger;
+        private readonly IConfigurationRoot _config; //TODO it doesnt work, can't resolve it
 
-        public LoginController(IUserService userService)
+        public LoginController(IUserService userService, ILogger<LoginController> logger, IConfigurationRoot config)
         {
             _userService = userService;
+            _logger = logger;
+            _config = config;
         }
 
         // GET: api/values
@@ -43,6 +56,15 @@ namespace ELP.WebApi.Controllers
         {
             return DateTime.UtcNow.ToString();
         }
+
+        // GET api/ping
+        [Authorize]
+        [HttpGet("pingAuth")]
+        public string PingWithAutorize()
+        {
+            return DateTime.UtcNow.ToString();
+        }
+
 
         // POST api/values
         [HttpPost]
@@ -73,7 +95,7 @@ namespace ELP.WebApi.Controllers
                 newUser.FirstName = user.FirstName;
                 IdentityResult createdUser = await _userService.CreateUser(newUser, user.Password);
 
-                if (createdUser!=null && createdUser.Succeeded)
+                if (createdUser != null && createdUser.Succeeded)
                 {
                     result = new GenericResult()
                     {
@@ -92,7 +114,7 @@ namespace ELP.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                //TODO log message
+                _logger.LogError(ex.Message);
                 result = new GenericResult()
                 {
                     Success = false,
@@ -103,16 +125,78 @@ namespace ELP.WebApi.Controllers
             return new ObjectResult(result);
         }
 
+        [ValidateModel]
         [HttpPost("signin")]
         public async Task<IActionResult> SignIn([FromBody] UserDto user)
         {
             var result = await _userService.SignIn(user.Username, user.Password);
-            
-            return new ObjectResult(new GenericResult()
+
+            if (result.Succeeded)
+                return Ok();
+
+            //return new ObjectResult(new GenericResult()
+            //{
+            //    Success = result.Succeeded,
+            //    Message = DateTime.UtcNow.ToString()
+            //});
+
+            return BadRequest("Failed to login");
+        }
+
+        [ValidateModel]
+        [HttpPost("token")]
+        public async Task<IActionResult> CreateToken([FromBody] UserDto userDto)
+        {
+            try
             {
-                Success = result.Succeeded,
-                Message = DateTime.UtcNow.ToString()
-            });
+                var u = await _userService.GetUserByUsername(userDto.Username);
+                if (u != null)
+                {
+                    if (_userService.VerifyHashedPassword(u, userDto.Password) == PasswordVerificationResult.Success)
+                    {
+                        var userClaims = await _userService.GetClaims(u);
+
+                        var claims = new[]
+                        {
+                            new Claim(JwtRegisteredClaimNames.Sub, u.UserName),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                            new Claim(JwtRegisteredClaimNames.GivenName, u.FirstName),
+                            new Claim(JwtRegisteredClaimNames.FamilyName, u.LastName),
+                            new Claim(JwtRegisteredClaimNames.Email, u.Email)
+                        }.Union(userClaims);
+
+                        //TODO move to config
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+                        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                        var token = new JwtSecurityToken(
+                            issuer: _config["Tokens:Issuer"],
+                            audience: _config["Tokens:Audience"],
+                            claims: claims,
+                            expires: DateTime.UtcNow.AddMinutes(15),
+                            signingCredentials: creds
+                            );
+
+                        return Ok(new
+                        {
+                            token = new JwtSecurityTokenHandler().WriteToken(token),
+                            expiration = token.ValidTo
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+
+            //return new ObjectResult(new GenericResult()
+            //{
+            //    Success = result.Succeeded,
+            //    Message = DateTime.UtcNow.ToString()
+            //});
+
+            return BadRequest("Failed to login");
         }
     }
 }
