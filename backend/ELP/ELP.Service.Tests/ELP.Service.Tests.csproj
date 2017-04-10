@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EncryptionServiceTests.cs" />
+    <Compile Remove="MembershipServiceTests.cs" />
+    <Compile Remove="RoleServiceTests.cs" />
+    <Compile Remove="UserServiceTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170125-04" />
     <PackageReference Include="Moq" Version="4.7.1" />
     <PackageReference Include="xunit" Version="2.2.0-beta5-build3474" />

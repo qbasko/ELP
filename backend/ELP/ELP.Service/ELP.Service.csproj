@@ -5,7 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EncryptionService.cs" />
+    <Compile Remove="EntityServices\IRoleService.cs" />
+    <Compile Remove="EntityServices\IUserRoleService.cs" />
+    <Compile Remove="EntityServices\RoleService.cs" />
+    <Compile Remove="EntityServices\UserRoleService.cs" />
+    <Compile Remove="IEncryptionService.cs" />
+    <Compile Remove="IMembershipService.cs" />
+    <Compile Remove="MembershipContext.cs" />
+    <Compile Remove="MembershipService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="1.1.1" />
     <PackageReference Include="Microsoft.DotNet.InternalAbstractions" Version="1.0.500-preview2-1-003177" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.1" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />

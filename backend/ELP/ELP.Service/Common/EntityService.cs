@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace ELP.Service.Common
 {
-    public abstract class EntityService<T> : IEntityService<T> where T : BaseEntity
+    public abstract class EntityService<T> : IEntityService<T> where T : class
     {
         protected IContext _context;
         protected DbSet<T> _dbset;
@@ -26,7 +26,7 @@ namespace ELP.Service.Common
             {
                 throw new ArgumentNullException("entity");
             }
-            
+
             _dbset.Add(entity);
             _context.SaveChanges();
         }

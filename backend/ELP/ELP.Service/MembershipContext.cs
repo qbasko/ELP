@@ -1,4 +1,5 @@
 ﻿using ELP.Model.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -9,7 +10,7 @@ namespace ELP.Service
     public class MembershipContext
     {
         public IPrincipal Principal { get; set; }
-        public User User { get; set; }
+        public IdentityUser User { get; set; }
         public bool IsValid()
         {
             return Principal != null;

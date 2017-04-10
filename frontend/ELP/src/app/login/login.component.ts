@@ -4,17 +4,17 @@ import { LoginService } from './login.service';
 import { Constants } from 'app/constants';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  providers: [
-    LoginService
-  ]
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    providers: [
+        LoginService
+    ]
 })
 
 export class LoginComponent implements OnInit {
 
-  @Input() loggedUsername: string;
+    @Input() loggedUsername: string;
 
     private _username: string;
     private _password: string;
@@ -22,27 +22,26 @@ export class LoginComponent implements OnInit {
     private _hideUsernameError: boolean;
     private _hidePasswordError: boolean;
 
-  constructor(private router: Router, private loginService: LoginService) {
-    this._hidePasswordError = true;
-    this._hideSummaryError = true;
-    this._hideUsernameError = true;
-   }
+    constructor(private router: Router, private loginService: LoginService) {
+        this._hidePasswordError = true;
+        this._hideSummaryError = true;
+        this._hideUsernameError = true;
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
-  onKeyUp(event: KeyboardEvent)
-  {
-    let target = <HTMLFormElement>event.target;
+    onKeyUp(event: KeyboardEvent) {
+        let target = <HTMLFormElement>event.target;
         if (target.name === 'UserName') {
             this._username === '' ? this._hideUsernameError = false : this._hideUsernameError = true;
         }
         else if (target.name === 'Password') {
             this._password === '' ? this._hidePasswordError = false : this._hidePasswordError = true;
         }
-  }
+    }
 
-   onLogin() {
+    onLogin() {
         if ((this._username === '' || this._username === undefined) && (this._password === '' || this._password === undefined)) {
             this._hideUsernameError = false;
             this._hidePasswordError = false;

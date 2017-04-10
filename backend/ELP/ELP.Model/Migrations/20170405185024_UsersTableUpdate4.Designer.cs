@@ -8,9 +8,10 @@ using ELP.Model;
 namespace ELP.Model.Migrations
 {
     [DbContext(typeof(ELPContext))]
-    partial class ELPContextModelSnapshot : ModelSnapshot
+    [Migration("20170405185024_UsersTableUpdate4")]
+    partial class UsersTableUpdate4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.1")
