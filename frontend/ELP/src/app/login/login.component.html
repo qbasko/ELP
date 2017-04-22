@@ -1,38 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head> 
-		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<!-- Website Font style -->
-	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-      	<!--<link rel="stylesheet" type="text/css" href="./assets/css/login.css">-->
-		
-		<!-- Google Fonts -->
-		<link href='https://fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
-		<link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+	<!-- Website Font style -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
 
-		<title>Login</title>
-	</head>
-	<body>
-		<div>
+	<!--<link rel="stylesheet" type="text/css" href="./assets/css/login.css">-->
+
+	<!-- Google Fonts -->
+	<link href='https://fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+
+	<title>Login</title>
+</head>
+
+<body>
+	<div>
 			<div class="row main">
 				<div class="panel-heading">
-	               <div class="panel-title text-center">
-	               		<h1 class="title">Login</h1>
-	               		<hr />
-	               	</div>
-	            </div> 
+					<div class="panel-title text-center">
+						<h1 class="title">Login</h1>
+						<hr />
+					</div>
+				</div>
 				<div class="main-login main-center">
-					<form class="form-horizontal" method="post" (ngSubmit)="onLogin($event)" novalidate #loginForm="ngForm">						
+					<form class="form-horizontal" method="post" (ngSubmit)="onLogin($event)" novalidate #loginForm="ngForm">
 						<div class="form-group">
 							<label for="username" class="cols-sm-2 control-label">Username</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
-									<input type="text" class="form-control" name="username" id="username"  placeholder="Enter your Username" required [(ngModel)]="_username" (keyup)="onKeyUp($event)"/>									
+									<input type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" required [(ngModel)]="_username"
+										(keyup)="onKeyUp($event)" />
 								</div>
-								 <span [hidden]="_hideUsernameError" class="field-validation-error">Username is required.</span>
+								<span [hidden]="_hideUsernameError" class="field-validation-error">Username is required.</span>
 							</div>
 						</div>
 
@@ -41,21 +44,29 @@
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-									<input type="password" class="form-control" name="password" id="password"  placeholder="Enter your Password" required [(ngModel)]="_password" (keyup)="onKeyUp($event)" />
+									<input type="password" class="form-control" name="password" id="password" placeholder="Enter your Password" required [(ngModel)]="_password"
+										(keyup)="onKeyUp($event)" />
 								</div>
-									<span [hidden]="_hidePasswordError" class="field-validation-error">Password is required.</span>
+								<span [hidden]="_hidePasswordError" class="field-validation-error">Password is required.</span>
 							</div>
-						</div>	
+						</div>
 
 						<div class="form-group ">
 							<button type="submit" class="btn btn-primary btn-lg btn-block login-button">Login</button>
 						</div>
 						<div class="login-register">
-				            <a href="index.php">Return</a>
-				         </div>
+							<a href="index.php">Return</a>
+						</div>
 					</form>
 				</div>
 			</div>
-		</div>		
-	</body>
+			<div class="main-login main-center">
+				<form class="form-horizontal" novalidate #loginForm="ngForm">
+						<button id="Google" type="submit" class="btn btn-primary btn-lg btn-block login-button" (ngClick)="onLoginWithFacebook($event)" >Login with Google</button>
+						<button id="Facebook" type="submit" class="btn btn-primary btn-lg btn-block login-button" (ngClick)="onLoginWithFacebook($event)">Login with Facebook</button>
+				</form>
+			</div>
+	</div>
+</body>
+
 </html>

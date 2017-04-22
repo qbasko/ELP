@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http.Authentication;
 
 namespace ELP.Service
 {
@@ -54,6 +55,11 @@ namespace ELP.Service
         public async Task<IList<Claim>> GetClaims(User user)
         {
             return await _userManager.GetClaimsAsync(user);
+        }
+
+        public AuthenticationProperties ConfigureExternalAuthenticationProperties(string provider, string redirectUrl)
+        {
+            return _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         }
     }
 }

@@ -169,6 +169,12 @@ namespace ELP.WebApi
                 }
             });
 
+            app.UseGoogleAuthentication(new GoogleOptions()
+            {
+                ClientId = "asdasd3d32d3423",
+                ClientSecret = "zxczxc32d3"
+            });
+
             app.UseMvc();
 
             identityInitializer.Seed().Wait();

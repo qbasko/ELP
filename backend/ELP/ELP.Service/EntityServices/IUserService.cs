@@ -1,5 +1,6 @@
 ﻿using ELP.Model.Entities;
 using ELP.Service.Common;
+using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
@@ -18,5 +19,6 @@ namespace ELP.Service
         Task SignOut();
         PasswordVerificationResult VerifyHashedPassword(User user, string password);
         Task<IList<Claim>> GetClaims(User user);
+        AuthenticationProperties ConfigureExternalAuthenticationProperties(string provider, string redirectUrl);
     }
 }

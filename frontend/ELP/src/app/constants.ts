@@ -4,4 +4,6 @@ export class Constants {
     static _apiUrl = 'http://localhost:63698/api/';
     static Username = "Username";
     static Password = "Password";
+    static GoogleProvider = "Google";
+    static FacebookProvider = "Facebook";
 }

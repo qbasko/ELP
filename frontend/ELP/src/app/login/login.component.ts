@@ -68,4 +68,12 @@ export class LoginComponent implements OnInit {
         }
     }
 
+    onLoginWithGoogle(){
+        this.loginService.externalLogin(Constants.GoogleProvider);
+    }
+
+    onLoginWithFacebook(){
+        this.loginService.externalLogin(Constants.FacebookProvider);
+    }
+
 }

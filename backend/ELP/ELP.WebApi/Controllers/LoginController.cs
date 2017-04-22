@@ -149,23 +149,22 @@ namespace ELP.WebApi.Controllers
         {
             try
             {
-                var u = await _userService.GetUserByUsername(userDto.Username);
-                if (u != null)
+                var user = await _userService.GetUserByUsername(userDto.Username);
+                if (user != null)
                 {
-                    if (_userService.VerifyHashedPassword(u, userDto.Password) == PasswordVerificationResult.Success)
+                    if (_userService.VerifyHashedPassword(user, userDto.Password) == PasswordVerificationResult.Success)
                     {
-                        var userClaims = await _userService.GetClaims(u);
+                        var userClaims = await _userService.GetClaims(user);
 
                         var claims = new[]
                         {
-                            new Claim(JwtRegisteredClaimNames.Sub, u.UserName),
+                            new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                            new Claim(JwtRegisteredClaimNames.GivenName, u.FirstName),
-                            new Claim(JwtRegisteredClaimNames.FamilyName, u.LastName),
-                            new Claim(JwtRegisteredClaimNames.Email, u.Email)
+                            new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+                            new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
+                            new Claim(JwtRegisteredClaimNames.Email, user.Email)
                         }.Union(userClaims);
 
-                        //TODO move to config
                         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
                         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -190,13 +189,25 @@ namespace ELP.WebApi.Controllers
                 _logger.LogError(ex.Message);
             }
 
-            //return new ObjectResult(new GenericResult()
-            //{
-            //    Success = result.Succeeded,
-            //    Message = DateTime.UtcNow.ToString()
-            //});
-
             return BadRequest("Failed to login");
+        }
+
+
+        [HttpGet("externalLogin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLogin([FromBody] ExternalLoginDto extLoginDto)
+        {
+            // Request a redirect to the external login provider.
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Login", new { ReturnUrl = extLoginDto.RedirectUrl });
+            var properties = _userService.ConfigureExternalAuthenticationProperties(extLoginDto.Provider, redirectUrl);
+            return Challenge(properties, extLoginDto.Provider);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            return Ok();
         }
     }
 }
