@@ -3,32 +3,35 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { AlertModule } from 'ng2-bootstrap';
-import {RouterModule} from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
-import {WelcomeComponent} from './welcome/welcome.component';
+import { WelcomeComponent } from './welcome/welcome.component';
 import { RegisterComponent } from './register/register.component';
+import { LogoutComponent } from './login/logout.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     WelcomeComponent,
-    RegisterComponent
+    RegisterComponent,
+    LogoutComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     AlertModule.forRoot(),
-    RouterModule.forRoot([    
-    {path: 'login', component: LoginComponent},
-    {path: 'register', component: RegisterComponent},
-    {path: 'welcome', component: WelcomeComponent},    
-    {path: '', redirectTo: 'welcome', pathMatch: 'full'},
-    {path: '**', redirectTo: 'welcome', pathMatch: 'full'}
-  ]),
+    RouterModule.forRoot([
+      { path: 'login', component: LoginComponent },
+      { path: 'logout', component: LogoutComponent },
+      { path: 'register', component: RegisterComponent },
+      { path: 'welcome', component: WelcomeComponent },
+      { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+      { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
+    ]),
   ],
   providers: [],
   bootstrap: [AppComponent]

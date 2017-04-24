@@ -30,7 +30,7 @@ export class LoginService {
     console.log(Constants._apiUrl.concat(this._signInAction));
     return this.http.post(Constants._apiUrl.concat(this._signInAction), body, options)
       .map((response: Response) => {
-        console.log(response.json());
+        //console.log(response.json());
         return true;
         // let token = response.json() && response.json().Token;
         // if (token) {
